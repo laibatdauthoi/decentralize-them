@@ -92,7 +92,7 @@ export default function HomePlaylist() {
         <div className="flex justify-center -mt-2 mb-6"> 
           <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-4 py-1.5 rounded-xl backdrop-blur-sm">
             <span className="text-base mr-1">😎</span>
-            <span className="text-[13px] font-black uppercase tracking-wider text-[var(--pink_main)]">Highest Love:</span>
+            <span className="text-[13px] font-black uppercase tracking-wider text-[var(--pink_main)]">Highest Push:</span>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-black text-white tracking-tighter animate-pulse ml-0.5">{MaxPower1}</span>
               <span className="text-[11px] font-black text-[var(--pink_main)] uppercase ml-0.5">APT</span>
