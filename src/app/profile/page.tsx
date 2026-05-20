@@ -1,0 +1,114 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
+import { useMemo } from "react";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useAccountBlobs } from "@shelby-protocol/react";
+import { UploadButton } from "@/components/UploadButton";
+import { TrackList } from "@/components/TrackList";
+import { useMusic } from "@/components/MusicContext";
+
+const AUDIO_EXTENSIONS = [
+  ".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac", ".opus", ".wma", ".aiff",
+];
+
+const isAudioFile = (fileName: string) => {
+  if (!fileName) return false;
+  const lower = fileName.toLowerCase();
+  return AUDIO_EXTENSIONS.some((ext) => lower.endsWith(ext));
+};
+
+export default function ProfilePage() {
+  const router = useRouter();
+  const { account } = useWallet();
+  const { playTrack } = useMusic();
+
+  const walletAddress = useMemo(
+    () => account?.address?.toString(),
+    [account]
+  );
+
+  const {
+    data: blobList,
+    isLoading,
+    error,
+    refetch,
+  } = useAccountBlobs({
+    account: walletAddress || "",
+    pagination: { limit: 100, offset: 0 },
+  });
+
+  const tracks = useMemo(() => {
+    return (blobList || [])
+      .filter((blob: any) => {
+        const fileName = blob.name.split("/").pop() || "";
+        return isAudioFile(fileName);
+      })
+      .map((blob: any, index: number) => ({
+        id: blob.name || index,
+        title: blob.name.split("/").pop() || blob.name,
+        size: blob.size,
+        createdAt: blob.created_at,
+        blobName: blob.name,
+        walletAddress: walletAddress || "",
+      }));
+  }, [blobList, walletAddress]);
+
+  const handlePlay = async (blobName: string) => {
+    if (!walletAddress) return;
+    await playTrack({
+      title: blobName.split("/").pop() || blobName,
+      blobName,
+      walletAddress,
+    });
+  };
+
+  return (
+    // FIX: Thêm no-scrollbar vào đây để ẩn thanh cuộn của cả trang
+    <section className="relative min-h-dvh w-full flex flex-col items-center px-3 sm:px-4 pt-6 overflow-hidden no-scrollbar">
+      
+      {/* ĐOẠN CSS NÀY DIỆT THANH CUỘN TOÀN DIỆN */}
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+
+      <div className="absolute top-2 right-2 z-50">
+        <button
+          onClick={() => router.back()}
+          className="btn_primary gap-2 text-[11px] sm:text-[12px]"
+        >
+          BACK <ArrowRight size={16} />
+        </button>
+      </div>
+
+      <div className="w-full max-w-[850px] flex flex-col items-center h-[calc(100dvh-1.5rem)] min-h-0">
+        <header className="w-full text-center mb-4 flex-shrink-0">
+          <h2 className="neon_heading blink uppercase tracking-[0.2em] leading-tight text-[clamp(2rem,4vw,3.5rem)]">
+            My Studio
+          </h2>
+        </header>
+
+        <div className="mb-5 sm:mb-8 flex justify-center w-full flex-shrink-0">
+          <div className="w-full max-w-[420px] flex justify-center">
+            <UploadButton onUploaded={refetch} />
+          </div>
+        </div>
+
+        {/* Cụm Playlist: Cuộn bên trong, không hiện thanh cuộn */}
+        <div className="w-full flex flex-col flex-grow overflow-hidden mb-24 sm:mb-10 min-h-0">
+          <section className="glass_panel w-full h-full !p-0 !border-[3px] overflow-hidden flex flex-col">
+            <div className="flex-grow overflow-y-auto no-scrollbar p-3 sm:p-4 min-h-0">
+              <TrackList
+                tracks={tracks}
+                isLoading={isLoading}
+                error={error}
+              />
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  );
+}

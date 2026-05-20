@@ -1,0 +1,6 @@
+---
+profiles:
+  default:
+    network: Testnet
+    account: 3fee4daed928f18f2c7d61da6ff596854bc3e6dc3f5c22f13bf4a9332631573e
+    rest_url: "https://fullnode.testnet.aptoslabs.com"

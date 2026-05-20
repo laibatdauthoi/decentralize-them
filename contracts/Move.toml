@@ -1,0 +1,19 @@
+[package]
+name = "SoundBattleV5"
+version = "1.0.0"
+upgrade_policy = "compatible"
+
+[addresses]
+# Để "_" để CLI tự động tạo và điền địa chỉ Resource Account khi chạy lệnh deploy
+sound_battle_addr = "_"
+
+# Địa chỉ ví cá nhân của mày để xác thực quyền tạo Resource Account
+source_addr = "0x3fee4daed928f18f2c7d61da6ff596854bc3e6dc3f5c22f13bf4a9332631573e"
+
+# Địa chỉ thư viện chuẩn của Aptos
+std = "0x1"
+
+[dependencies]
+# Thư viện core của Aptos
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework" }
+AptosStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-stdlib" }
